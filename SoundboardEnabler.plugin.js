@@ -4,75 +4,44 @@ console.log("SoundboardEnabler plugin started.");
 
 class SoundboardEnabler {
   constructor() {
-    this.soundboardEnabled = false;
-    this.voiceChannel = null;
+    this.soundboardEnabled = true; // Enable soundboard by default
     this.soundboardButton = null;
 
     this.initialize();
   }
 
   initialize() {
-    // Listen for voice state updates
-    document.addEventListener("voiceStateUpdate", this.handleVoiceStateUpdate);
-
     // Find the soundboard button and store a reference to it
     this.soundboardButton = document.querySelector(".soundboardButton-2aSHcU");
 
-    // Add a click event listener to the soundboard button to unlock custom sounds
+    // Add a click event listener to the soundboard button to toggle soundboard
     if (this.soundboardButton) {
       this.soundboardButton.addEventListener("click", this.handleSoundboardButtonClick);
     }
   }
 
   start() {
-    this.handleVoiceStateUpdate();
+    this.updateSoundboardState();
   }
 
   stop() {
-    this.disableSoundboard();
     this.soundboardButton.removeEventListener("click", this.handleSoundboardButtonClick);
   }
 
-  handleVoiceStateUpdate = () => {
-    // Get the user's current voice channel
-    const userVoiceState = BdApi.findModuleByProps("getVoiceState").getVoiceState();
-    if (userVoiceState && userVoiceState.channelId) {
-      this.voiceChannel = userVoiceState.channelId;
-
-      // Enable the soundboard button
-      this.enableSoundboard();
-    } else {
-      this.voiceChannel = null;
-
-      // Disable the soundboard button
-      this.disableSoundboard();
-    }
-  };
-
-  enableSoundboard() {
+  updateSoundboardState() {
     if (this.soundboardButton) {
-      this.soundboardButton.style.display = "block";
-      this.soundboardEnabled = true;
-    }
-  }
-
-  disableSoundboard() {
-    if (this.soundboardButton) {
-      this.soundboardButton.style.display = "none";
-      this.soundboardEnabled = false;
+      // Toggle the soundboard button based on the enabled state
+      this.soundboardButton.style.display = this.soundboardEnabled ? "block" : "none";
     }
   }
 
   handleSoundboardButtonClick = () => {
-    // Logic for handling custom sounds on your server
-    // Replace this with your custom sound logic
-    this.playCustomSound();
-  };
+    // Toggle soundboard state
+    this.soundboardEnabled = !this.soundboardEnabled;
 
-  playCustomSound() {
-    // Play your custom sound logic here
-    console.log("Playing custom sound...");
-  }
+    // Update the soundboard button display
+    this.updateSoundboardState();
+  };
 }
 
 const soundboardEnabler = new SoundboardEnabler();
